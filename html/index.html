@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днем Рождения, Захарчик!</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>С Днем Рождения, Захарчик! 🎉</h1>
+            <div class="birthday-cake">🎂</div>
+        </header>
+
+        <section class="wishes-section">
+            <h2>Дорогой Захарчик!</h2>
+            <p>В этот особенный день хотим пожелать тебе море счастья, 
+               океан любви и бесконечного потока радостных моментов! 
+               Пусть каждый день будет наполнен улыбками и успехами!</p>
+        </section>
+
+        <section class="add-wish">
+            <h3>Оставь своё поздравление</h3>
+            <form id="wishForm">
+                <textarea id="wishText" placeholder="Напиши своё поздравление здесь..."></textarea>
+                <input type="text" id="wishAuthor" placeholder="Твоё имя">
+                <button type="submit">Отправить поздравление</button>
+            </form>
+        </section>
+
+        <section class="wishes-list">
+            <h3>Поздравления от друзей</h3>
+            <div id="wishesList"></div>
+        </section>
+    </div>
+
+    <script>
+       async function fetchGreetings() {
+           const response = await fetch('/api/greetings/');
+           const greetings = await response.json();
+           const wishesList = document.getElementById('wishesList');
+           wishesList.innerHTML = '';
+           greetings.forEach(greeting => {
+               const wishElement = document.createElement('div');
+               wishElement.className = 'wish-card';
+               wishElement.innerHTML = `
+                   <p>${greeting.message}</p>
+                   <span class="author">- ${greeting.name}</span>
+               `;
+               wishesList.prepend(wishElement);
+           });
+       }
+
+       document.getElementById('wishForm').addEventListener('submit', async function(e) {
+           e.preventDefault();
+           
+           const wishText = document.getElementById('wishText').value;
+           const author = document.getElementById('wishAuthor').value;
+           
+           if (wishText && author) {
+               const response = await fetch('/api/send_greeting/', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/x-www-form-urlencoded',
+                   },
+                   body: new URLSearchParams({
+                       'name': author,
+                       'message': wishText
+                   })
+               });
+
+               if (response.ok) {
+                   fetchGreetings(); // Refresh the list of greetings
+                   document.getElementById('wishText').value = '';
+                   document.getElementById('wishAuthor').value = '';
+               }
+           }
+       });
+
+       // Fetch greetings when the page loads
+       window.onload = fetchGreetings;
+    </script>
+</body>
+</html>

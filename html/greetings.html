@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Greetings</title>
+</head>
+<body>
+    <h1>Greetings List</h1>
+    <ul>
+        {% for greeting in greetings %}
+        <li><strong>{{ greeting.name }}</strong>: {{ greeting.message }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
